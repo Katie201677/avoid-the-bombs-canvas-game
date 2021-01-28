@@ -1,34 +1,38 @@
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
-const img = new Image();
-img.src = "images/dino.png";
-dinoWidth = img.width/5;
-dinoHeight = img.height/5;
+let img = new Image();
+img.src = "images/green-bot-sprites-transparent.png";
+let sprite = 1;
+let frameNum = 0;
 
-let x = 10;
+let x = 0;
 let y = canvas.height/2;
-const xChange = 2;
-const yChange = 2;
-
 let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
 
-
-// function to draw moving dino sprite:
 function drawImage() {
-    ctx.drawImage(img, x, y, dinoWidth, dinoHeight);
+    ctx.drawImage(img, (sprite*16), 32, 16, 16, x, y, 50, 50);
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawImage();
+    if (frameNum % 13 === 0) {
+        if (sprite === 7) {
+            sprite = 1;
+        } else {
+            sprite ++;
+        }
+    }
+    frameNum++;
+    // arrow controls:
     if(rightPressed) {
         x += 5;
-        if (x + dinoWidth > canvas.width) {
-            x = canvas.width - dinoWidth;
+        if (x + 50 > canvas.width) {
+            x = canvas.width - 50;
         }
     }
     if(leftPressed) {
@@ -45,12 +49,11 @@ function draw() {
     }
     else if(downPressed) {
         y += 5;
-        if (y + dinoHeight > canvas.height) {
-            y = canvas.height - dinoHeight;
+        if (y + 50 > canvas.height) {
+            y = canvas.height - 50;
         }
     }
     requestAnimationFrame(draw);
-
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
@@ -62,6 +65,7 @@ function keyDownHandler(e) {
     }
     if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = true;
+        console.log(leftPressed);
     }
     if(e.key == "Up" || e.key == "ArrowUp") {
         upPressed = true;
