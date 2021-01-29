@@ -17,11 +17,13 @@ let upPressed = false;
 let downPressed = false;
 
 let ballX;
-let ballY = 20;
+let ballY;
 let ballRadius = 10;
-let ballMax = 5;
+let ballMax = 10;
 let colour = 'green';
 let balls = [];
+let increment = -1;
+let maxX = (canvas.width / 2) - 50;
 
 function generateRandomX(min, max) {
     min = Math.ceil(min);
@@ -31,9 +33,10 @@ function generateRandomX(min, max) {
 
 function populateBalls() {
     for (let i=0; i<ballMax; i++) {
-        ballX =  generateRandomX(0, 720);
+        ballX =  generateRandomX(0, 1440);
+        ballY = generateRandomX(0, 100);
         // add to e.g. 10,000 pixels then work out which would be in camera
-        balls[i] = { x: ballX, status: 0 };
+        balls[i] = { x: ballX, y: -ballY, status: 0 };
     }
 }
 populateBalls();
@@ -43,7 +46,7 @@ populateBalls();
 function drawBalls() {
     for (let i=0; i<balls.length; i++) {
         ctx.beginPath();
-        ctx.arc(balls[i].x, ballY, ballRadius, 0, Math.PI*2);
+        ctx.arc(balls[i].x, balls[i].y, ballRadius, 0, Math.PI*2);
         ctx.fillStyle = colour;
         ctx.fill();
         ctx.closePath();
@@ -52,6 +55,22 @@ function drawBalls() {
 
 function drawImage() {
     ctx.drawImage(img, (sprite*16), 32, 16, 16, x, y, 50, 50);
+}
+
+function incrementBackground() {
+    if(x > 10) {
+        for(let i=0; i<balls.length; i++) {
+            balls[i].x += increment;
+        }
+    }
+}
+
+function decrementBackground() {
+    if(x < maxX) {
+        for(let i=0; i<balls.length; i++) {
+            balls[i].x -= increment;
+        }
+    }
 }
 
 function draw() {
@@ -68,12 +87,14 @@ function draw() {
     // arrow controls:
     if(rightPressed) {
         x += 5;
+        incrementBackground();
         if (x + 50 > canvas.width) {
-            x = canvas.width - 50;
+            x = canvas.width - 50;  
         }
     }
     if(leftPressed) {
         x -= 5;
+        decrementBackground();
         if(x < 0) {
             x = 0;
         }
@@ -92,8 +113,11 @@ function draw() {
     }
     
     drawBalls();
-  
-    ballY += 1;
+    // ballY += 1;
+    for (let i=0; i<balls.length; i++) {
+        balls[i].y += 0.75;
+    }
+    
     requestAnimationFrame(draw);
 }
 
@@ -106,7 +130,6 @@ function keyDownHandler(e) {
     }
     if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = true;
-        console.log(leftPressed);
     }
     if(e.key == "Up" || e.key == "ArrowUp") {
         upPressed = true;
