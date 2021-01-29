@@ -19,7 +19,7 @@ let downPressed = false;
 let ballX;
 let ballY;
 let ballRadius = 10;
-let ballMax = 10;
+// let ballMax = 10;
 let colour = 'green';
 let balls = [];
 let increment = -1;
@@ -31,26 +31,34 @@ function generateRandomX(min, max) {
     return Math.floor(Math.random() * (max - min) + min); 
 }
 
-function populateBalls() {
-    for (let i=0; i<ballMax; i++) {
+function populateBalls(ballMax) {
+    for (let i=0; i < ballMax; i++) {
         ballX =  generateRandomX(0, 1440);
         ballY = generateRandomX(0, 100);
         // add to e.g. 10,000 pixels then work out which would be in camera
-        balls[i] = { x: ballX, y: -ballY, status: 0 };
+        balls.push({ x: ballX, y: -ballY, status: 0 });
     }
 }
-populateBalls();
+populateBalls(5);
 
 
 
-function drawBalls() {
-    for (let i=0; i<balls.length; i++) {
-        ctx.beginPath();
-        ctx.arc(balls[i].x, balls[i].y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = colour;
-        ctx.fill();
-        ctx.closePath();
-    }  
+// function drawBalls() {
+//     for (let i=0; i<balls.length; i++) {
+//         ctx.beginPath();
+//         ctx.arc(balls[i].x, balls[i].y, ballRadius, 0, Math.PI*2);
+//         ctx.fillStyle = colour;
+//         ctx.fill();
+//         ctx.closePath();
+//     }  
+// }
+
+function drawBall(xCoord, yCoord) {
+    ctx.beginPath();
+    ctx.arc(xCoord, yCoord, ballRadius, 0, Math.PI*2);
+    ctx.fillStyle = colour;
+    ctx.fill();
+    ctx.closePath(); 
 }
 
 function drawImage() {
@@ -112,7 +120,14 @@ function draw() {
         }
     }
     
-    drawBalls();
+    if (frameNum % 13 === 0) {
+        populateBalls(1);
+    }
+
+    for (let i=0; i<balls.length; i++) {
+        drawBall(balls[i].x, balls[i].y);
+    }
+    // drawBalls();
     // ballY += 1;
     for (let i=0; i<balls.length; i++) {
         balls[i].y += 0.75;
