@@ -1,3 +1,6 @@
+// at canvas.width / 2 (e.g.), stop bot from moving and move background the the left by increments instead. Save increment in separate variable. 
+
+
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
@@ -12,6 +15,40 @@ let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
+
+let ballX;
+let ballY = 20;
+let ballRadius = 10;
+let ballMax = 5;
+let colour = 'green';
+let balls = [];
+
+function generateRandomX(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); 
+}
+
+function populateBalls() {
+    for (let i=0; i<ballMax; i++) {
+        ballX =  generateRandomX(0, 720);
+        // add to e.g. 10,000 pixels then work out which would be in camera
+        balls[i] = { x: ballX, status: 0 };
+    }
+}
+populateBalls();
+
+
+
+function drawBalls() {
+    for (let i=0; i<balls.length; i++) {
+        ctx.beginPath();
+        ctx.arc(balls[i].x, ballY, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = colour;
+        ctx.fill();
+        ctx.closePath();
+    }  
+}
 
 function drawImage() {
     ctx.drawImage(img, (sprite*16), 32, 16, 16, x, y, 50, 50);
@@ -53,6 +90,10 @@ function draw() {
             y = canvas.height - 50;
         }
     }
+    
+    drawBalls();
+  
+    ballY += 1;
     requestAnimationFrame(draw);
 }
 
