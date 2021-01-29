@@ -1,6 +1,3 @@
-// at canvas.width / 2 (e.g.), stop bot from moving and move background the the left by increments instead. Save increment in separate variable. 
-
-
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
@@ -19,7 +16,6 @@ let downPressed = false;
 let ballX;
 let ballY;
 let ballRadius = 10;
-// let ballMax = 10;
 let colour = 'green';
 let balls = [];
 let increment = -1;
@@ -35,23 +31,10 @@ function populateBalls(ballMax) {
     for (let i=0; i < ballMax; i++) {
         ballX =  generateRandomX(0, 1440);
         ballY = generateRandomX(0, 100);
-        // add to e.g. 10,000 pixels then work out which would be in camera
         balls.push({ x: ballX, y: -ballY, status: 0 });
     }
 }
 populateBalls(5);
-
-
-
-// function drawBalls() {
-//     for (let i=0; i<balls.length; i++) {
-//         ctx.beginPath();
-//         ctx.arc(balls[i].x, balls[i].y, ballRadius, 0, Math.PI*2);
-//         ctx.fillStyle = colour;
-//         ctx.fill();
-//         ctx.closePath();
-//     }  
-// }
 
 function drawBall(xCoord, yCoord) {
     ctx.beginPath();
@@ -84,6 +67,7 @@ function decrementBackground() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawImage();
+    // rotate sprite:
     if (frameNum % 13 === 0) {
         if (sprite === 7) {
             sprite = 1;
@@ -119,16 +103,16 @@ function draw() {
             y = canvas.height - 50;
         }
     }
-    
+    // add new ball to array every 13 frames
     if (frameNum % 13 === 0) {
         populateBalls(1);
     }
 
+    // draw the balls:
     for (let i=0; i<balls.length; i++) {
         drawBall(balls[i].x, balls[i].y);
     }
-    // drawBalls();
-    // ballY += 1;
+
     for (let i=0; i<balls.length; i++) {
         balls[i].y += 0.75;
     }
