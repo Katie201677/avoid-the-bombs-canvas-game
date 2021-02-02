@@ -6,6 +6,12 @@ img.src = "images/green-bot-sprites-transparent.png";
 let sprite = 1;
 let frameNum = 0;
 
+let apple = new Image();
+apple.src = "images/apple.png";
+let bomb = new Image();
+bomb.src = "images/bomb.gif";
+imgSwitch = true;
+
 let x = 0;
 let y = canvas.height/2;
 let rightPressed = false;
@@ -16,7 +22,7 @@ let downPressed = false;
 let ballX;
 let ballY;
 let ballRadius = 10;
-let colour = 'green';
+let colour;
 let balls = [];
 let increment = -1;
 let maxX = (canvas.width / 2) - 50;
@@ -27,21 +33,32 @@ function generateRandomX(min, max) {
     return Math.floor(Math.random() * (max - min) + min); 
 }
 
+function generateColour() {
+    let num = Math.random();
+    if(num >= 0.8) {
+        return bomb;
+    } else {
+        return apple;
+    }
+}
+
 function populateBalls(ballMax) {
     for (let i=0; i < ballMax; i++) {
         ballX =  generateRandomX(0, 1440);
         ballY = generateRandomX(0, 100);
-        balls.push({ x: ballX, y: -ballY, status: 0 });
+        colour = generateColour(); 
+        balls.push({ image: colour, x: ballX, y: -ballY, status: 0 });
     }
 }
 populateBalls(5);
 
-function drawBall(xCoord, yCoord) {
-    ctx.beginPath();
-    ctx.arc(xCoord, yCoord, ballRadius, 0, Math.PI*2);
-    ctx.fillStyle = colour;
-    ctx.fill();
-    ctx.closePath(); 
+function drawBall(appbom, xCoord, yCoord) {
+    // ctx.beginPath();
+    // ctx.arc(xCoord, yCoord, ballRadius, 0, Math.PI*2);
+    // ctx.fillStyle = colour;
+    // ctx.fill();
+    // ctx.closePath(); 
+    ctx.drawImage(appbom, xCoord, yCoord);
 }
 
 function drawImage() {
@@ -110,7 +127,7 @@ function draw() {
 
     // draw the balls:
     for (let i=0; i<balls.length; i++) {
-        drawBall(balls[i].x, balls[i].y);
+        drawBall(balls[i].image, balls[i].x, balls[i].y);
     }
 
     for (let i=0; i<balls.length; i++) {
