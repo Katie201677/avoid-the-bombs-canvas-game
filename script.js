@@ -1,3 +1,7 @@
+// collision detection with where apples / bombs are drawn
+// you win mechanism if hit ten points
+// speed up ball drop with eac x frames
+
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
@@ -35,6 +39,8 @@ let score = 0;
 let lives = 5;
 
 let rafid;
+
+let ballSpeed = 0.5;
 
 function generateRandomX(min, max) {
     min = Math.ceil(min);
@@ -75,21 +81,24 @@ function drawBot() {
 }
 
 function drawScore() {
-    ctx.font = "14px Arial";
+    const text = `Score: ${score}`;
+    ctx.font = "14px 'Press Start 2P'";
     ctx.fillStyle = "black";
-    ctx.fillText("Score: "+score, 8, 20);
+    ctx.fillText(text, 8, 20);
 }
 
 function drawLives() {
-    ctx.font = "14px Arial";
-    ctx.fillStyle = "black";
-    ctx.fillText("Lives: "+lives, canvas.width - 60, 20);
+    const text = `Lives: ${lives}`;
+    ctx.font = "14px 'Press Start 2P'";
+    ctx.fillStyle = "black"; 
+    ctx.fillText(text, canvas.width - (ctx.measureText(text).width + 20), 20);
 }
 
 function drawGameOver() {
-    ctx.font = "60px Arial";
+    const text = "Game Over"
+    ctx.font = "60px 'Press Start 2P'";
     ctx.fillStyle = "black";
-    ctx.fillText("Game Over", canvas.width / 2 - 60, canvas.height / 2);
+    ctx.fillText(text, canvas.width / 2 - (ctx.measureText(text).width / 2), canvas.height / 2);
 }
 
 function incrementBackground() {
@@ -125,6 +134,7 @@ function collisionDetection() {
             balls[i].status = false;
             if (balls[i].appleOrBomb === apple) {
                 score ++;
+                ballSpeed += 0.5;
             } else {
                 if(balls[i].appleOrBomb === bomb) {
                     if (lives > 0) {
@@ -148,8 +158,8 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // add new ball to array every 13 frames
-    if (frameNum % 17 === 0) {
-        populateBalls(1);
+    if (frameNum % 13 === 0) {
+        populateBalls(2);
     }
 
     // draw the apples/bombs:
@@ -160,7 +170,7 @@ function draw() {
     }
 
     for (let i=0; i<balls.length; i++) {
-        balls[i].y += 0.8;
+        balls[i].y += ballSpeed;
     }
 
     drawBot();
