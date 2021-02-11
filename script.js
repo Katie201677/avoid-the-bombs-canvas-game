@@ -5,12 +5,14 @@ let bot = new Image();
 bot.src = "images/green-bot-sprites-transparent.png";
 let sprite = 1;
 let frameNum = 0;
+const botWidth = 40;
+const botHeight = 40;
 
 let apple = new Image();
 apple.src = "images/apple.png";
 console.log(apple.width);
 let bomb = new Image();
-bomb.src = "images/bomb.gif";
+bomb.src = "images/bomb.png";
 console.log(bomb.width);
 
 let x = 0;
@@ -24,8 +26,15 @@ let ballX;
 let ballY;
 let colour;
 let balls = [];
+const ballWidth = 30;
+const ballHeight = 30;
 let increment = -1;
 let maxX = (canvas.width / 2) - 50;
+
+let score = 0;
+let lives = 5;
+
+let rafid;
 
 function generateRandomX(min, max) {
     min = Math.ceil(min);
@@ -33,12 +42,12 @@ function generateRandomX(min, max) {
     return Math.floor(Math.random() * (max - min) + min); 
 }
 
-function generateColour() {
+function generateAppleOrBomb() {
     let num = Math.random();
     if(num >= 0.8) {
-        return bomb;
-    } else {
         return apple;
+    } else {
+        return bomb;
     }
 }
 
@@ -46,8 +55,8 @@ function populateBalls(ballMax) {
     for (let i=0; i < ballMax; i++) {
         ballX =  generateRandomX(0, 1440);
         ballY = generateRandomX(0, 100);
-        colour = generateColour(); 
-        balls.push({ image: colour, x: ballX, y: -ballY, status: true });
+        appleOrBomb = generateAppleOrBomb(); 
+        balls.push({ appleOrBomb: appleOrBomb, x: ballX, y: -ballY, status: true });
     }
 }
 populateBalls(5);
@@ -58,11 +67,29 @@ function drawBall(appbom, xCoord, yCoord) {
     // ctx.fillStyle = colour;
     // ctx.fill();
     // ctx.closePath(); 
-    ctx.drawImage(appbom, xCoord, yCoord, 50, 50);
+    ctx.drawImage(appbom, xCoord, yCoord, 30, 30);
 }
 
 function drawBot() {
-    ctx.drawImage(bot, (sprite*16), 32, 16, 16, x, y, 30, 30);
+    ctx.drawImage(bot, (sprite*16), 32, 16, 16, x, y, 40, 40);
+}
+
+function drawScore() {
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("Score: "+score, 8, 20);
+}
+
+function drawLives() {
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("Lives: "+lives, canvas.width - 60, 20);
+}
+
+function drawGameOver() {
+    ctx.font = "60px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("Game Over", canvas.width / 2 - 60, canvas.height / 2);
 }
 
 function incrementBackground() {
@@ -81,13 +108,41 @@ function decrementBackground() {
     }
 }
 
+let gameOver = false;
+
 function collisionDetection() {
-    for(let i=0; i<balls.length; i++) {
-        if (x > balls[i].x && x < balls[i].x + 30 && y > balls[i].y && y < balls[i].y + 30) {
+    const tolerance = 5;
+    for (let i=0; i<balls.length; i++) {
+        if (
+            (x + tolerance) < balls[i].x + ballWidth
+            && x + botWidth - tolerance > balls[i].x
+            && y + tolerance < balls[i].y + ballHeight
+            && y + botHeight - tolerance > balls[i].y
+        ) {
+            if (!balls[i].status) {
+                continue;
+            }
             balls[i].status = false;
+            if (balls[i].appleOrBomb === apple) {
+                score ++;
+            } else {
+                if(balls[i].appleOrBomb === bomb) {
+                    if (lives > 0) {
+                        lives --;
+                    } else {
+                        drawGameOver();
+                        gameOver = true;
+                    }
+                    
+                }
+            }
         }
     }
 }
+
+// function stop() {
+//     cancelAnimationFrame(rafid);
+// }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -100,7 +155,7 @@ function draw() {
     // draw the apples/bombs:
     for (let i=0; i<balls.length; i++) {
         if (balls[i].status) {
-            drawBall(balls[i].image, balls[i].x, balls[i].y);
+            drawBall(balls[i].appleOrBomb, balls[i].x, balls[i].y);
         } 
     }
 
@@ -146,8 +201,17 @@ function draw() {
         }
     }
     collisionDetection();
+    drawScore();
+    drawLives();
     
-    requestAnimationFrame(draw);
+    if (!gameOver) {
+        rafid = requestAnimationFrame(draw);
+    } else {
+        rafid = cancelAnimationFrame(draw);
+    }
+
+
+    
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
@@ -182,4 +246,4 @@ function keyUpHandler(e) {
         downPressed = false;
     }
 }
-draw();
+rafid = requestAnimationFrame(draw);
