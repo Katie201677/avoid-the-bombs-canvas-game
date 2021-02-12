@@ -1,18 +1,16 @@
-// collision detection with where apples / bombs are drawn
-// you win mechanism if hit ten points
-// speed up ball drop with eac x frames
+// To do: collision detection with where apples / bombs are drawn
 
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
-let bot = new Image();
+const bot = new Image();
 bot.src = "images/green-bot-sprites-transparent.png";
 let sprite = 1;
 let frameNum = 0;
 const botWidth = 40;
 const botHeight = 40;
 
-let apple = new Image();
+const apple = new Image();
 apple.src = "images/apple.png";
 console.log(apple.width);
 let bomb = new Image();
@@ -95,7 +93,14 @@ function drawLives() {
 }
 
 function drawGameOver() {
-    const text = "Game Over"
+    const text = "Game Over";
+    ctx.font = "60px 'Press Start 2P'";
+    ctx.fillStyle = "black";
+    ctx.fillText(text, canvas.width / 2 - (ctx.measureText(text).width / 2), canvas.height / 2);
+}
+
+function drawYouWin() {
+    const text = "You Win!"
     ctx.font = "60px 'Press Start 2P'";
     ctx.fillStyle = "black";
     ctx.fillText(text, canvas.width / 2 - (ctx.measureText(text).width / 2), canvas.height / 2);
@@ -134,7 +139,13 @@ function collisionDetection() {
             balls[i].status = false;
             if (balls[i].appleOrBomb === apple) {
                 score ++;
-                ballSpeed += 0.5;
+                if (score < 10) {
+                    ballSpeed += 0.5; 
+                }
+                else if(score === 10) {
+                    drawYouWin();
+                    gameOver = true;
+                }   
             } else {
                 if(balls[i].appleOrBomb === bomb) {
                     if (lives > 0) {
