@@ -5,6 +5,7 @@ const ctx = canvas.getContext("2d");
 
 const bot = new Image();
 bot.src = "images/green-bot-sprites-transparent.png";
+
 let sprite = 1;
 let frameNum = 0;
 const botWidth = 40;
@@ -12,10 +13,9 @@ const botHeight = 40;
 
 const apple = new Image();
 apple.src = "images/apple.png";
-console.log(apple.width);
-let bomb = new Image();
+
+const bomb = new Image();
 bomb.src = "images/bomb.png";
-console.log(bomb.width);
 
 let x = 0;
 let y = canvas.height/2;
@@ -23,29 +23,26 @@ let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
-
 let ballX;
 let ballY;
-let colour;
 let balls = [];
 const ballWidth = 30;
 const ballHeight = 30;
-let increment = -1;
-let maxX = (canvas.width / 2) - 50;
-
+const increment = -1;
+const maxX = (canvas.width / 2) - 50;
 let score = 0;
 let lives = 5;
-
 let rafid;
-
 let ballSpeed = 0.5;
 
+// function to generate random coordinate to draw apply or bomb:
 function generateRandomX(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); 
 }
 
+// function to randomly determine whether an apple or bomb is drawn, with bomb more likely:
 function generateAppleOrBomb() {
     let num = Math.random();
     if(num >= 0.8) {
@@ -55,6 +52,7 @@ function generateAppleOrBomb() {
     }
 }
 
+// function to populate an array or apples / bombs, up to a maximum and with randomly generated x and y coordinates (with y starting above the canvas to create effect of dropping in at different times) - itially called to generate 5:
 function populateBalls(ballMax) {
     for (let i=0; i < ballMax; i++) {
         ballX =  generateRandomX(0, 1440);
@@ -65,19 +63,17 @@ function populateBalls(ballMax) {
 }
 populateBalls(5);
 
+// function to draw an apple or bomb:
 function drawBall(appbom, xCoord, yCoord) {
-    // ctx.beginPath();
-    // ctx.arc(xCoord, yCoord, ballRadius, 0, Math.PI*2);
-    // ctx.fillStyle = colour;
-    // ctx.fill();
-    // ctx.closePath(); 
     ctx.drawImage(appbom, xCoord, yCoord, 30, 30);
 }
 
+// function to draw the bot sprite:
 function drawBot() {
     ctx.drawImage(bot, (sprite*16), 32, 16, 16, x, y, 40, 40);
 }
 
+// function to print the score on the canvas:
 function drawScore() {
     const text = `Score: ${score}`;
     ctx.font = "14px 'Press Start 2P'";
@@ -85,6 +81,7 @@ function drawScore() {
     ctx.fillText(text, 8, 20);
 }
 
+// function to print the lives on the canvas:
 function drawLives() {
     const text = `Lives: ${lives}`;
     ctx.font = "14px 'Press Start 2P'";
