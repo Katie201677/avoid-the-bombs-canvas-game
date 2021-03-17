@@ -32,10 +32,11 @@ const increment = -1;
 const maxX = (canvas.width / 2) - 50;
 let score = 0;
 let lives = 5;
-let rafid;
 let ballSpeed = 0.5;
 
-// function to generate random coordinate to draw apply or bomb:
+let gameOver = false;
+
+// function to generate random coordinate to draw apple or bomb:
 function generateRandomX(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -89,6 +90,7 @@ function drawLives() {
     ctx.fillText(text, canvas.width - (ctx.measureText(text).width + 20), 20);
 }
 
+// function to print game over message on screen:
 function drawGameOver() {
     const text = "Game Over";
     ctx.font = "60px 'Press Start 2P'";
@@ -96,6 +98,7 @@ function drawGameOver() {
     ctx.fillText(text, canvas.width / 2 - (ctx.measureText(text).width / 2), canvas.height / 2);
 }
 
+// function to print win message on screen:
 function drawYouWin() {
     const text = "You Win!"
     ctx.font = "60px 'Press Start 2P'";
@@ -103,6 +106,7 @@ function drawYouWin() {
     ctx.fillText(text, canvas.width / 2 - (ctx.measureText(text).width / 2), canvas.height / 2);
 }
 
+//functions to move background left / right as sprite is moved:
 function incrementBackground() {
     if(x > 10) {
         for(let i=0; i<balls.length; i++) {
@@ -119,8 +123,7 @@ function decrementBackground() {
     }
 }
 
-let gameOver = false;
-
+// function to loop through each ball and check for collision
 function collisionDetection() {
     const tolerance = 5;
     for (let i=0; i<balls.length; i++) {
@@ -158,10 +161,6 @@ function collisionDetection() {
     }
 }
 
-// function stop() {
-//     cancelAnimationFrame(rafid);
-// }
-
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -177,6 +176,7 @@ function draw() {
         } 
     }
 
+    // make the balls fall. Ball speed increases with each point won:
     for (let i=0; i<balls.length; i++) {
         balls[i].y += ballSpeed;
     }
@@ -223,19 +223,14 @@ function draw() {
     drawLives();
     
     if (!gameOver) {
-        rafid = requestAnimationFrame(draw);
-    } else {
-        rafid = cancelAnimationFrame(draw);
-    }
-
-
-    
+        requestAnimationFrame(draw);
+    } 
 }
+// event listeners and handlers for keyboard controls:
+document.addEventListener("keydown", keyDownHandler);
+document.addEventListener("keyup", keyUpHandler);
 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-function keyDownHandler(e) {
+function keyDownHandler(e) { // IE and edge 16 and earlier use 'Left' instead of 'ArrowLeft' etc
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
     }
@@ -264,4 +259,5 @@ function keyUpHandler(e) {
         downPressed = false;
     }
 }
-rafid = requestAnimationFrame(draw);
+
+requestAnimationFrame(draw);
